@@ -16,7 +16,7 @@ object HarmonySearch {
       Seq.fill(hms)(randomVector)
     }
 
-  val search: (Int, Int) => HarmonyVector =
+  val search: (Int, Int) => (Seq[String], Int) =
     (iterations, hms) => {
       var hm = generateHm(hms)
       for (i <- 0 until iterations) {
@@ -26,7 +26,12 @@ object HarmonySearch {
           hm = newVector +: hm.filterNot(vector => vector == worst)
         } else hm
       }
-      hm minBy (v => v.fitness)
+      val best: HarmonyVector = hm minBy (v => v.fitness)
+      val bestReadable = best.harmony map (note => {
+        val swapped = Music.pitchClassIntMap map (_.swap)
+        swapped(note)
+      })
+      (bestReadable, best.fitness)
     }
 
 }

@@ -15,7 +15,7 @@ object Music {
   }
 
   def generateScale(scaleSteps: Seq[Int], root: Note): Seq[Note] = {
-    scaleSteps.scanLeft(absPitch(root))(_+_).map(abs => pitch(abs))
+    scaleSteps.scanLeft(absPitch(root))(_ + _).map(abs => pitch(abs))
   }
 
   def transpose(note: Note, step: Int): Note = {
@@ -27,28 +27,29 @@ object Music {
   }
 
   def pitchClassToInt(pitchClass: String): Int = {
-    pitchClass match {
-      case "C" => 0
-      case "Cs" => 1
-      case "D" => 2
-      case "Ds" => 3
-      case "E" => 4
-      case "F" => 5
-      case "Fs" => 6
-      case "G" => 7
-      case "Gs" => 8
-      case "A" => 9
-      case "As" => 10
-      case "B" => 11
-      case "C+" => 12
-      case _ => throw new RuntimeException("pitch class does not exist")
-    }
+    pitchClassIntMap(pitchClass)
   }
+
+  val pitchClassIntMap = Map(
+    "C" -> 0,
+    "Cs" -> 1,
+    "D" -> 2,
+    "Ds" -> 3,
+    "E" -> 4,
+    "F" -> 5,
+    "Fs" -> 6,
+    "G" -> 7,
+    "Gs" -> 8,
+    "A" -> 9,
+    "As" -> 10,
+    "B" -> 11,
+    "C+" -> 12
+  )
 
   def pitch(absPitch: Int): Note = {
     val pitch = absPitch % 12
     val octave = absPitch / 12
-    Note(List("C","Cs","D","Ds","E","F","Fs","G","Gs","A","As","B")(pitch), octave)
+    Note(List("C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs", "A", "As", "B")(pitch), octave)
   }
 
 }
