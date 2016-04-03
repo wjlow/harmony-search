@@ -40,6 +40,7 @@ object Music {
       case "A" => 9
       case "As" => 10
       case "B" => 11
+      case "C+" => 12
       case _ => throw new RuntimeException("pitch class does not exist")
     }
   }
