@@ -14,13 +14,11 @@ object HarmonySearch {
   }
 
   val generateHm: Int => Seq[HarmonyVector] =
-    hms => {
-      Seq.fill(hms)(randomVector)
-    }
+    hms => Seq.fill(hms)(randomVector)
 
   case class BestHarmonyVector(harmony: Seq[String], fitness: Int)
 
-  val search: (Int, Int) => (Seq[String], Int) =
+  val search: (Int, Int) => BestHarmonyVector =
     (iterations, hms) => {
       var hm = generateHm(hms)
       for (i <- 0 until iterations) {
