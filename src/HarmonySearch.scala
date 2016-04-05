@@ -13,16 +13,24 @@ object HarmonySearch {
     HarmonyVector(harmony, GregorianChantFitness.compute(melody, harmony))
   }
 
-  val generateHm: Int => Seq[HarmonyVector] =
-    hms => Seq.fill(hms)(randomVector)
+  def generateMutant(hm: Seq[HarmonyVector]): HarmonyVector = {
+      var mutant: Seq[Int] = Nil
+      for (i <- melody.indices) {
+        val randomlyChosenHarmony = hm(Random.nextInt(hm.size))
+        mutant :+= randomlyChosenHarmony.harmony(i)
+      }
+      HarmonyVector(mutant, GregorianChantFitness.compute(melody, mutant))
+    }
 
   case class BestHarmonyVector(harmony: Seq[String], fitness: Int)
 
   val search: (Int, Int) => BestHarmonyVector =
     (iterations, hms) => {
-      var hm = generateHm(hms)
+      val generateInitialHm: Int => Seq[HarmonyVector] = hms => Seq.fill(hms)(randomVector)
+
+      var hm = generateInitialHm(hms)
       for (i <- 0 until iterations) {
-        val newVector = randomVector
+        val newVector = generateMutant(hm)
         val worst = hm maxBy (v => v.fitness)
         if (newVector.fitness < worst.fitness) {
           hm = newVector +: hm.filterNot(vector => vector == worst)
