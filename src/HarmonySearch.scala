@@ -4,6 +4,8 @@ object HarmonySearch {
 
   case class HarmonyVector(harmony: Seq[Int], fitness: Int)
 
+  val hmcr = 0.9
+
   val melody: Seq[Int] = Seq("C", "D", "E", "F", "G", "G", "A", "A", "G", "F", "D", "E", "G", "G", "A", "B", "C+", "C+", "B", "G", "B", "A", "G", "A", "G", "F", "D", "E") map (Music.pitchClassToInt(_))
 
   def randomVector: HarmonyVector = {
@@ -15,6 +17,8 @@ object HarmonySearch {
     hms => {
       Seq.fill(hms)(randomVector)
     }
+
+  case class BestHarmonyVector(harmony: Seq[String], fitness: Int)
 
   val search: (Int, Int) => (Seq[String], Int) =
     (iterations, hms) => {
@@ -31,7 +35,7 @@ object HarmonySearch {
         val swapped = Music.pitchClassIntMap map (_.swap)
         swapped(note)
       })
-      (bestReadable, best.fitness)
+      BestHarmonyVector(bestReadable, best.fitness)
     }
 
 }
