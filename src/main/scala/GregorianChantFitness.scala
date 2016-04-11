@@ -2,7 +2,7 @@ object GregorianChantFitness {
 
   type Score = Int
 
-  val penalties: (Seq[Int], Seq[Int]) => Score =
+  private val penalties: (Seq[Int], Seq[Int]) => Score =
     (ms, hs) => {
       val p1 = harmonyLessOrEqualMelody(ms, hs)
       val p2 = consecutive(ms, hs)
@@ -11,38 +11,43 @@ object GregorianChantFitness {
       ((p1, p2, p3).zipped map (_ + _ + _)).sum
     }
 
-  val dropHeadAndLast: Seq[Int] => Seq[Int] =
+  private val dropHeadAndLast: Seq[Int] => Seq[Int] =
     xs => xs.drop(1).dropRight(1)
 
-  val harmonyLessOrEqualMelody: (Seq[Int], Seq[Int]) => Seq[Score] =
-    (ms, hs) =>
-      ms zip hs map {
-        case (m, h) => if (!(h <= m)) 3 else 0
-      }
 
-  val consecutive: (Seq[Int], Seq[Int]) => Seq[Score] =
+  private val harmonyLessOrEqualMelody: (Seq[Int], Seq[Int]) => Seq[Score] =
     (ms, hs) => {
+      val penalty = 5
+      ms zip hs map {
+        case (m, h) => if (!(h <= m)) penalty else 0
+      }
+    }
+
+  private val consecutive: (Seq[Int], Seq[Int]) => Seq[Score] =
+    (ms, hs) => {
+      val penalty = 3
       val toIntervals: Seq[Int] => Seq[Int] =
         xs => xs zip xs.tail map {
           case (a, b) => b - a
         }
       toIntervals(ms) zip toIntervals(hs) map {
-        case (m, h) => if (m > h) 3 else 0
+        case (m, h) => if (m > h) penalty else 0
       }
     }
 
-  val startAndEnd: (Seq[Int], Seq[Int]) => Seq[Score] =
+  private val startAndEnd: (Seq[Int], Seq[Int]) => Seq[Score] =
     (ms, hs) => {
-      val start = if (ms.head - hs.head != 0) 3 else 0
+      val penalty = 0
+      val start = if (ms.head != hs.head) penalty else 0
       val mid = dropHeadAndLast(ms) map (_ => 0)
-      val end = if (ms.last - hs.last != 0) 3 else 0
+      val end = if (ms.last != hs.last) penalty else 0
       start +: mid :+ end
     }
 
-  val rankAll: (Seq[Int], Seq[Int]) => Score =
+  private val rankAll: (Seq[Int], Seq[Int]) => Score =
     (ms, hs) => ((ms, hs).zipped map rank).sum
 
-  val rank: (Int, Int) => Score =
+  private val rank: (Int, Int) => Score =
     (m, h) =>
       m - h match {
         case 5 => 1
@@ -50,7 +55,7 @@ object GregorianChantFitness {
         case 0 => 3
         case 12 => 3
         case 4 => 4
-        case 9 => 6
+        case 9 => 4
         case 2 => 5
         case 10 => 5
         case _ => 3
